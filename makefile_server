@@ -1,2 +1,0 @@
-server:*.c *.h
-	gcc server.c checkWin.c my_socket.c -o ./bin/server -I ./
