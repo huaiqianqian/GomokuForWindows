@@ -48,6 +48,7 @@ void gomoku_show(char gomoku[][MYSIZE]) {
 		}
 		printf("\n");
 	}
+	printf("hint : a->10 b->11 ...\n");
 }
 
 void gomoku_init(char gomoku[][MYSIZE]) {
@@ -61,27 +62,49 @@ void gomoku_init(char gomoku[][MYSIZE]) {
 		gomoku[0][i] = gomoku[i][0] = i<=9? (i + '0'): (i-10 + 'a');
 }
 
-
 void gomoku_step(char gomoku[][MYSIZE], int* x, int* y, int is_c) {
 	system("cls");
 	gomoku_show(gomoku);
-loop:
-	{
-#define player_name(is_c) (is_c?"client":"server")
-		printf("%s's turn:\n", player_name(is_c));
-		scanf("%d %d", x, y);
-		if (*x < 1 || *x > MYSIZE - 1 || *y < 1 || *y > MYSIZE - 1) {
-			printf("invalid input\n");
-			goto loop;
+
+	// 循环直到获取有效输入
+	while (1) {
+		// 显示当前玩家标识
+		printf("%s's turn (Input row column, range 1-%d):\n",
+			is_c ? "Client" : "Server", MYSIZE - 1);
+
+		// 读取完整输入行
+		char input[32];
+		if (fgets(input, sizeof(input), stdin) == NULL) {
+			fprintf(stderr, "Input error: Read operation failed\n");
+			exit(EXIT_FAILURE);
 		}
 
+		// 移除换行符
+		input[strcspn(input, "\n")] = '\0';
+
+		// 格式验证：必须包含两个整数
+		if (sscanf(input, "%d %d", x, y) != 2) {
+			puts("Error: Invalid format. Expected: [number][space][number]");
+			continue;
+		}
+
+		// 范围有效性验证
+		if (*x < 1 || *x >= MYSIZE || *y < 1 || *y >= MYSIZE) {
+			printf("Error: Coordinates out of range. Valid values: 1-%d\n", MYSIZE - 1);
+			continue;
+		}
+
+		// 棋盘位置可用性验证
 		if (gomoku[*x][*y] != '_') {
-			printf("there has been one chess.\n");
-			goto loop;
+			printf("Error: Position (%d,%d) already occupied by '%c'\n",
+				*x, *y, gomoku[*x][*y]);
+			continue;
 		}
 
-		gomoku[*x][*y] = getchess(is_c);
-#undef player_name
+		break;
 	}
+
+	// 落子并刷新棋盘显示
+	gomoku[*x][*y] = getchess(is_c);
 	gomoku_show(gomoku);
 }
