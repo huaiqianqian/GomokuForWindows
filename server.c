@@ -16,7 +16,7 @@ int main() {
 	my_listen(fd_socket, 5);
 
 	int sendlen = 0, recvlen = 0, len = sizeof(client_addr);
-	int i, j, x, y;
+	int x, y;
 	gomoku_init(gomoku);
 	gomoku_show(gomoku);
 	printf("waiting for client to connect...\n");
@@ -24,7 +24,7 @@ int main() {
 	printf("game start\n");
 	while (1) {
 		printf("waiting for client...\n");
-		my_recv(&recvlen, fd_client, (char*)msg, 1024);
+		my_recv(&recvlen, fd_client, (char*)msg, sizeof(msg));
 		gomoku[msg[0]][msg[1]] = getchess(1);
 		if (checkWin(msg[0], msg[1], gomoku, getchess(1))) {
 			printf("Client win\n");

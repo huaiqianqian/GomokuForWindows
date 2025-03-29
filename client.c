@@ -12,7 +12,7 @@ int main() {
 	SA server_addr;
 	int msg[2];
 	SOCKET fd_socket;
-	int index, sendlen = 0, recvlen = 0;
+	int sendlen = 0, recvlen = 0;
 	my_socketCli(&fd_socket, MY_TCP, IP, PORT, &server_addr);
 	my_connect(fd_socket, (pSA)&server_addr, sizeof(SA));
 	printf("client start\n");
@@ -28,7 +28,7 @@ int main() {
 				break;
 			}
 			printf("waiting for server...\n");
-			my_recv(&recvlen, fd_socket, (char*)msg, 1024);
+			my_recv(&recvlen, fd_socket, (char*)msg, sizeof(msg));
 			gomoku[msg[0]][msg[1]] = getchess(0);
 			if (checkWin(msg[0], msg[1], gomoku, getchess(0))) {
 				printf("Server win\n");
